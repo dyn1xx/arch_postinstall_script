@@ -22,8 +22,8 @@ function main {
     install_packages
     setup_bluetooth
     change_shell_to_zsh
-    configure_zsh
     pull_dotfiles
+    configure_zsh
     pull_scripts
     setup_fstab
     setup_firewall
