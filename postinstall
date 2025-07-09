@@ -1,0 +1,203 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+DIR="$(dirname "$0")"
+
+# Color control variables
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color / reset
+
+# Semantic wrappers
+err="${RED}[ERROR]${NC}"
+ok="${GREEN}[OK]${NC}"
+warn="${YELLOW}[WARN]${NC}"
+info="${BLUE}[INFO]${NC}"
+
+function main {
+    install_yay
+    install_packages
+    setup_bluetooth
+    change_shell_to_zsh
+    configure_zsh
+    pull_dotfiles
+    pull_scripts
+    setup_fstab
+    setup_firewall
+    setup_syncthing
+    disable_grub_menu
+    enable_wayland_default
+    fix_qt_theme
+}
+
+function install_yay {
+    echo -e "${info} Installing yay..."
+    if ! command -v yay &>/dev/null; then
+        sudo pacman -S --noconfirm git
+        git clone https://aur.archlinux.org/yay.git /tmp/yay
+        pushd /tmp/yay
+        makepkg -si --noconfirm
+        popd
+        rm -rf /tmp/yay
+        echo -e "${ok} Done."
+    else
+        echo -e "${warn} yay is already installed"
+    fi
+}
+
+function install_packages {
+    echo -e "${info} Installing packages..."
+    mapfile -t packages < "${DIR}/packages.list"
+    yay -S --noconfirm --needed "${packages[@]}"
+    echo -e "${ok} Done."
+}
+
+function setup_bluetooth {
+    echo -e "${info} Enabling Bluetooth services..."
+    sudo systemctl enable --now bluetooth.service
+    echo -e "${ok} Done."
+}
+
+function change_shell_to_zsh {
+    echo -e "${info} Changing default shell to zsh..."
+    if [[ $SHELL != */zsh ]]; then
+        chsh -s "$(which zsh)"
+        echo -e "${ok} Done."
+    else
+        echo -e "${warn} Shell is already set to zsh."
+    fi
+}
+
+function configure_zsh {
+    echo -e "${info} Installing zsh-zap..."
+
+    if [[ ! -d "$HOME/.local/share/zap" ]]; then
+        zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1 -k
+        echo -e "${ok} zsh-zap installed."
+    else
+        echo -e "${warn} zsh-zap is already installed! Skipping..."
+    fi
+}
+
+function pull_dotfiles {
+    echo -e "${info} Cloning dotfiles..."
+    DOTFILES_DIR="$HOME/.dotfiles"
+    if [[ ! -d $DOTFILES_DIR ]]; then
+        git clone https://github.com/dyn1xx/dotfiles.git "$DOTFILES_DIR"
+        echo "Creating symlinks..."
+        pushd "$DOTFILES_DIR"
+        stow -t ~ .
+        popd
+        echo -e "${ok} Done."
+    else
+        echo -e "${warn} Directory already exists! Skipping..."
+    fi
+}
+
+function setup_fstab {
+    echo -e "${info} Adding nas automount to /etc/fstab..."
+
+    if ! grep -Fxq '192.168.1.2:/storage  /mnt/nas  nfs  noauto,x-systemd.automount,_netdev,timeo=14,retry=0  0  0' /etc/fstab; then
+        echo "192.168.1.2:/storage  /mnt/nas  nfs  noauto,x-systemd.automount,_netdev,timeo=14,retry=0  0  0" | sudo tee -a /etc/fstab > /dev/null
+    else
+        echo -e "${warn} Already exists! Skipping..."
+    fi
+
+    echo "Enabling nfs service..."
+    sudo systemctl enable --now nfs-client.target
+    echo -e "${ok} Done."
+}
+
+function setup_firewall {
+    echo -e "${info} Setting up UFW firewall..."
+    sudo ufw default deny incoming
+    sudo ufw default allow outgoing
+    sudo ufw enable
+    echo -e "${ok} Done."
+}
+
+function pull_scripts {
+    echo -e "${info} Cloning scripts..."
+    BIN_DIR="$HOME/.local/bin"
+    if [[ ! -d $BIN_DIR ]]; then
+        git clone https://github.com/dyn1xx/bin.git "$BIN_DIR"
+        echo -e "${ok} Done."
+    else
+        echo -e "${warn} Already exists! Skipping..."
+    fi
+}
+
+function disable_grub_menu {
+    echo -e "${info} Disabling Grub menu..."
+    local grub_cfg="/etc/default/grub"
+
+    sudo sed -i \
+        -e 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' \
+        -e '/^GRUB_TIMEOUT=/!aGRUB_TIMEOUT=0' \
+        -e 's/^GRUB_TIMEOUT_STYLE=.*/GRUB_TIMEOUT_STYLE=hidden/' \
+        -e '/^GRUB_TIMEOUT_STYLE=/!aGRUB_TIMEOUT_STYLE=hidden' \
+        "$grub_cfg"
+
+    echo "Updating GRUB config..."
+    if [[ -x "$(command -v update-grub)" ]]; then
+        sudo update-grub
+        echo -e "${ok} Done."
+    elif [[ -x "$(command -v grub-mkconfig)" ]]; then
+        sudo grub-mkconfig -o /boot/grub/grub.cfg
+        echo -e "${ok} Done."
+    else
+        echo -e "${err} Could not find GRUB update command."
+        return 1
+    fi
+}
+
+function setup_syncthing {
+    echo -e "${info} Enabling syncthing services..."
+    sudo systemctl enable --now syncthing@v.service
+    echo -e "${ok} Done."
+}
+
+function enable_wayland_default {
+    echo -e "${info} Enabling wayland for certain applications..."
+    # source configs
+    local files=(
+        "${DIR}/files/discord.desktop"
+        "${DIR}/files/signal-desktop.desktop"
+        "${DIR}/files/org.darktable.darktable.desktop"
+        "${DIR}/files/chromium.desktop"
+    )
+
+    local target_dir="$HOME/.local/share/applications"
+
+    # Create target dir if it doesn't exist
+    mkdir -p "$target_dir"
+
+    # Copy files to target dir
+    for file in "${files[@]}"; do
+        cp "$file" "$target_dir/"
+    done
+
+    # Update desktop database
+    update-desktop-database "$target_dir"
+    echo -e "${ok} Done."
+}
+
+function fix_qt_theme {
+    local line='QT_QPA_PLATFORMTHEME=qt6ct'
+
+    echo -e "${info} Fixing QT theme..."
+
+    if grep -qxF "$line" /etc/environment; then
+        echo "QT theme already set in /etc/environment."
+    else
+        echo "$line" | sudo tee -a /etc/environment > /dev/null
+        echo "QT theme added to /etc/environment."
+    fi
+    echo -e "${ok} Done."
+}
+
+# start script
+main
