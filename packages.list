@@ -22,7 +22,6 @@ steam
 neovim
 btop
 tmux
-lf
 fastfetch
 rsync
 hyprland
@@ -109,3 +108,7 @@ kimageformats
 libavif
 libjxl
 loupe
+python-mutagen
+exiftool
+gpu-usage-waybar-git
+timeshift
