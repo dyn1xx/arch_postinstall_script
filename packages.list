@@ -118,3 +118,7 @@ nmap
 metasploit
 openvpn
 networkmanager-openvpn
+avrdude
+kicad
+qmk
+kwave
