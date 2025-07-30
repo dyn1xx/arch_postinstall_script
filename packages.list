@@ -122,3 +122,11 @@ avrdude
 kicad
 qmk
 kwave
+qemu-full
+virt-manager
+virt-viewer
+dnsmasq
+vde2
+bridge-utils
+openbsd-netcat
+libguestfs
