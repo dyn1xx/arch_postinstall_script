@@ -52,6 +52,7 @@ ffmpeg
 bluez
 wireguard-tools
 zip
+7zip
 unzip
 pipewire
 pipewire-pulse
@@ -130,3 +131,5 @@ vde2
 bridge-utils
 openbsd-netcat
 libguestfs
+wakeonlan
+bind
