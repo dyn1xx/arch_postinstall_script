@@ -111,7 +111,6 @@ libjxl
 loupe
 python-mutagen
 exiftool
-gpu-usage-waybar-git
 timeshift
 termshark
 hydra
@@ -133,3 +132,5 @@ openbsd-netcat
 libguestfs
 wakeonlan
 bind
+less
+yazi
