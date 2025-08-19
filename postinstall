@@ -118,6 +118,8 @@ function setup_firewall {
     sudo ufw allow 443/tcp
     sudo ufw default deny incoming
     sudo ufw default allow outgoing
+    sudo ufw allow 53317/tcp # localsend
+    sudo ufw allow 53317/udp # localsend
     sudo ufw enable
     sudo systemctl enable --now ufw
     echo -e "${ok} Done."
