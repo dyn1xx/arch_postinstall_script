@@ -43,10 +43,10 @@ zathura-pdf-poppler
 libqalculate
 starship
 syncthing
-tofi
 waybar
 waypaper
 breeze
+breeze5
 imagemagick
 ffmpeg
 bluez
@@ -144,3 +144,4 @@ spice-vdagent
 adw-gtk-theme
 millennium
 alsa-utils
+rofi
