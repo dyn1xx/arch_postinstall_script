@@ -33,6 +33,7 @@ function main {
     fix_qt_theme
     create_dirs
     rm_default_dirs
+    clone_wallpapers
 }
 
 function install_yay {
@@ -248,6 +249,17 @@ function rm_default_dirs {
     rmdir "$HOME/Templates/"
 
     echo -e "${ok} Done."
+}
+
+function clone_wallpapers {
+    echo -e "${info} Cloning wallpapers..."
+    DOTFILES_DIR="$HOME/media/pictures/wallpapers/"
+    if [[ ! -d $WALLPAPERS_DIR ]]; then
+        git clone https://github.com/dyn1xx/wallpapers.git "$WALLPAPERS_DIR"
+        echo -e "${ok} Done."
+    else
+        echo -e "${warn} Directory already exists! Skipping..."
+    fi
 }
 
 # start script
