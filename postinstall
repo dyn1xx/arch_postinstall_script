@@ -31,6 +31,8 @@ function main {
     disable_grub_menu
     enable_wayland_default
     fix_qt_theme
+    create_dirs
+    rm_default_dirs
 }
 
 function install_yay {
@@ -202,6 +204,49 @@ function fix_qt_theme {
         echo "$line" | sudo tee -a /etc/environment > /dev/null
         echo "QT theme added to /etc/environment."
     fi
+    echo -e "${ok} Done."
+}
+
+function create_dirs {
+    echo -e "${info} Creating Base Directories..."
+
+    mkdir "$HOME/downloads/"
+    mkdir "$HOME/personal/"
+    mkdir "$HOME/school/"
+    mkdir "$HOME/work/"
+    mkdir "$HOME/media/"
+    mkdir "$HOME/media/3D/"
+    mkdir "$HOME/media/books/"
+    mkdir "$HOME/media/documents/"
+    mkdir "$HOME/media/graphic_design/"
+    mkdir "$HOME/media/music/"
+    mkdir "$HOME/media/videos/"
+    mkdir "$HOME/media/videos/recordings"
+    mkdir "$HOME/media/videos/renders"
+    mkdir "$HOME/media/pictures/"
+    mkdir "$HOME/media/pictures/raw/"
+    mkdir "$HOME/media/pictures/exported/"
+    mkdir "$HOME/media/pictures/screenshots/"
+    mkdir "$HOME/media/pictures/environments/"
+    mkdir "$HOME/media/pictures/items/"
+    mkdir "$HOME/media/pictures/animals/"
+    mkdir "$HOME/media/pictures/people/"
+
+    echo -e "${ok} Done."
+}
+
+function rm_default_dirs {
+    echo -e "${info} Removing Default Directories..."
+
+    rmdir "$HOME/Desktop/"
+    rmdir "$HOME/Downloads/"
+    rmdir "$HOME/Documents/"
+    rmdir "$HOME/Pictures/"
+    rmdir "$HOME/Videos/"
+    rmdir "$HOME/Music/"
+    rmdir "$HOME/Public/"
+    rmdir "$HOME/Templates/"
+
     echo -e "${ok} Done."
 }
 
