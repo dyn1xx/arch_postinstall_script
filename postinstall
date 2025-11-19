@@ -34,6 +34,7 @@ function main {
     create_dirs
     rm_default_dirs
     clone_wallpapers
+    install_yazi_plugins
 }
 
 function install_yay {
@@ -269,6 +270,15 @@ function clone_wallpapers {
     else
         echo -e "${warn} Directory already exists! Skipping..."
     fi
+}
+
+function install_yazi_plugins {
+    echo -e "${info} Installing Yazi Plugins..."
+
+    ya pkg add dedukun/relative-motions
+    ya pkg add boydaihungst/mediainfo
+
+    echo -e "${ok} Done."
 }
 
 # start script
