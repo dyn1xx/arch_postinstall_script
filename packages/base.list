@@ -140,7 +140,6 @@ nmap
 timeshift
 termshark
 hydra
-loupe
 npm
 typescript
 yt-dlp
