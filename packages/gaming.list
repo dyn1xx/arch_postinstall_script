@@ -1,0 +1,10 @@
+steam
+wine-staging
+winetricks
+gamescope
+vulkan-radeon
+lib32-vulkan-radeon
+vulkan-tools
+mesa
+mesa-utils
+lib32-mesa

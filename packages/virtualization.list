@@ -1,0 +1,7 @@
+virt-manager
+virt-viewer
+qemu-full
+virtiofsd
+spice-vdagent
+vde2
+libguestfs
