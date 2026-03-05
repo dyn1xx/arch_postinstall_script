@@ -5,3 +5,5 @@ ansible
 qmk
 python-mutagen
 python
+docker
+docker-compose
