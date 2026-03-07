@@ -38,11 +38,3 @@ bind
 arch-install-scripts
 fastfetch
 bettercap
-openbsd-netcat
-hydra
-arp-scan
-gobuster
-exploitdb
-john
-hashcat
-seclists
