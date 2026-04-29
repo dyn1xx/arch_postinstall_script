@@ -12,3 +12,4 @@ enum4linux
 sqlmap
 medusa
 smbmap
+evil-winrm-py
