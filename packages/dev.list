@@ -8,3 +8,4 @@ python
 docker
 docker-compose
 screen
+arduino-cli
