@@ -8,6 +8,7 @@ hashcat
 seclists
 metasploit
 termshark
+wireshark-qt
 enum4linux
 sqlmap
 medusa
