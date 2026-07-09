@@ -4,6 +4,7 @@ typescript
 ansible
 qmk
 python-mutagen
+python-scipy
 python
 docker
 docker-compose
